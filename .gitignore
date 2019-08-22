@@ -36,3 +36,4 @@ dataset/*
 cmake-build-debug
 .idea/*
 cmake-build-debug/*
+*.txt

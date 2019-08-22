@@ -1,3 +1,0 @@
-/home/codebat/CLionProjects/bm25/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/codebat/CLionProjects/bm25/cmake-build-debug/CMakeFiles/bm25.dir
-/home/codebat/CLionProjects/bm25/cmake-build-debug/CMakeFiles/edit_cache.dir
