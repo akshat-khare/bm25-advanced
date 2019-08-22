@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/bm25.dir/main.cpp.o CMakeFiles/bm25.dir/Parser.cpp.o  -o bm25 
