@@ -67,7 +67,9 @@ public:
 
     void calculateWeights();
 
-    string trimPunct(string basicString);
+    string trimPunctAndInteger(string str);
+
+    bool isInteger(string basicString);
 };
 
 #endif //BM25_PARSER_H

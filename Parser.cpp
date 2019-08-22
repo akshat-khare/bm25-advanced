@@ -68,6 +68,12 @@ void Parser::parseFile(string fileName){
                     if(line.substr(0,6).compare(headTag)==0){
                         //parseHead
                         line = line.substr(6);
+                        size_t endHeadPos = line.find(headTagEnd);
+                        if(endHeadPos==string::npos){
+                            string nextLine;
+                            getline(file, nextLine);
+                            line = line + " " + nextLine;
+                        }
                         line.replace(line.find(headTagEnd), line.length(),"");
                         docLength += line.length();
                         processedTextHead = parseNonTaggedTextFromString(line);
@@ -141,8 +147,8 @@ vector<string> Parser::split(string text){
         token = text.substr(0,pos);
         transform(token.begin(), token.end(), token.begin(),
                           [](unsigned char c){ return tolower(c); });
-        token = trimPunct(token);
-        if(!isStopWord(token)  && token.length()>0){
+        token = trimPunctAndInteger(token);
+        if(!isStopWord(token) && !isInteger(token)  && token.length()>0){
             ans.push_back(token);
         }
         if(pos==string::npos){
@@ -218,16 +224,24 @@ void Parser::writeAvgAndNumDocuments(string fileName) {
     }
 }
 
-string Parser::trimPunct(string str) {
+string Parser::trimPunctAndInteger(string str) {
     for (int i = 0, len = str.size(); i < len; i++)
     {
-        if (ispunct(str[i]))
+        if (ispunct(str[i]) || isdigit(str[i]))
         {
             str.erase(i--, 1);
             len = str.size();
         }
     }
     return str;
+}
+
+bool Parser::isInteger(string basicString) {
+    string::const_iterator it = basicString.begin();
+    while(it!=basicString.end() && isdigit(*it)){
+        it++;
+    }
+    return !basicString.empty() && it == basicString.end();
 }
 
 
