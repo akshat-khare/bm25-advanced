@@ -42,6 +42,7 @@ void Parser::parseFolder(string folder){
     calculateWeights();
     writeIndexToDocumentInfo("indexToDocument.txt");
     writeAvgAndNumDocuments("avgAndNumDocuments.txt");
+    writeDocumentLengths("documentLengths.txt");
     writeInvertedIndex("invertedIndex.txt");
 };
 
@@ -244,6 +245,16 @@ bool Parser::isInteger(string basicString) {
         it++;
     }
     return !basicString.empty() && it == basicString.end();
+}
+
+void Parser::writeDocumentLengths(string fileName) {
+    ofstream file (fileName);
+    if(file.is_open()){
+        for(auto it = documentLengthVec.begin(); it!= documentLengthVec.end();it++){
+            file << *it << "\n";
+        }
+        file.close();
+    }
 }
 
 

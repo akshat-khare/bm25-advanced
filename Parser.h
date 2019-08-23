@@ -15,20 +15,10 @@
 #include <dirent.h>
 #include <algorithm>
 #include <math.h>
+#include "TermParameters.h"
+
 using namespace std;
-class TermParameters{
-public:
-    TermParameters(int documentIndex, int frequency){
-        dfi = 1;
-        documentIndexFrequency[documentIndex] = frequency;
-    }
-    int getDfi();
-    double getWeight();
-    set<tuple<int, int>> getDocumentIndexFrequency();
-    double weight;
-    int dfi;
-    map<int,int> documentIndexFrequency;
-};
+
 class Parser{
 public:
     Parser(){
@@ -62,6 +52,7 @@ public:
     void writeIndexToDocumentInfo(string fileName);
     void writeInvertedIndex(string fileName);
     void writeAvgAndNumDocuments(string fileName);
+    void writeDocumentLengths(string fileName);
     vector<string> split(string text);
 
 
