@@ -33,6 +33,7 @@ public:
     string headTagEnd = "</HEAD>";
     string textTag = "<TEXT>";
     string textTagEnd = "</TEXT>";
+    int headWeight = 6;
 public:
     string indexFileStructure;
     double avgDocumentLength; //write 1

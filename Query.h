@@ -25,8 +25,11 @@ public:
     Query(){
 
     };
-    double k1 = 0.0;
-    double b = 0.0;
+    double k1 = 1.5;
+    // double k1 = 2.0;
+
+    double b = 0.5;
+    // double b = 0.55;
     double avgDocumentLength; //read 1
     vector<string> indexToDocumentInfo; //read
     vector<int> documentLengthVec; //read
@@ -52,6 +55,12 @@ public:
     void readAvgAndNumDocuments(string fileName);
     void readDocumentLengths(string fileName);
 
+    int domainWeight =1;
+    int titleWeight = 3;
+    int descriptionWeight =1;
+    int narrativeWeight =1;
+    int summaryWeight = 2;
+    int conceptsWeight = 3;
     string topTag = "<top>";
     string numTag = "<num>";
     string numTagTrashText = " Number: ";

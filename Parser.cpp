@@ -97,8 +97,12 @@ void Parser::parseFile(string fileName){
                 }
                 documentLengthVec.push_back(docLength);
                 documentLengthSum += docLength;
-                processedTextHead.insert(processedTextHead.end(),processedTextBody.begin(),processedTextBody.end());
-                updateInvertedIndex(getIndexedText(processedTextHead));
+                vector<string> processed;
+                for(int iw=0;iw<headWeight;iw++){
+                    processed.insert(processed.end(),processedTextHead.begin(),processedTextHead.end());
+                }
+                processed.insert(processed.end(),processedTextBody.begin(),processedTextBody.end());
+                updateInvertedIndex(getIndexedText(processed));
                 numDocuments++;
             }
         }
@@ -153,7 +157,7 @@ vector<string> Parser::split(string text){
         transform(token.begin(), token.end(), token.begin(),
                           [](unsigned char c){ return tolower(c); });
         token = trimPunctAndInteger(token);
-        if(!isStopWord(token) && !isInteger(token)  && token.length()>0){
+        if(!isStopWord(token) && token.length()>0){
             ans.push_back(token);
         }
         if(pos==string::npos){

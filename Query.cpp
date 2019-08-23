@@ -116,12 +116,35 @@ Query::searchFile(string fileName, string indextoDocumentFile, string invertedIn
                     }
                 }
                 vector<string> processed;
-                processed.insert(processed.end(),processedDomain.begin(),processedDomain.end());
-                processed.insert(processed.end(),processedTitle.begin(),processedTitle.end());
-                processed.insert(processed.end(),processedDescription.begin(),processedDescription.end());
-                processed.insert(processed.end(),processedSummary.begin(),processedSummary.end());
-                processed.insert(processed.end(),processedNarrative.begin(),processedNarrative.end());
-                processed.insert(processed.end(),processedConcepts.begin(),processedConcepts.end());
+                for(int wtc=0;wtc<domainWeight;wtc++){
+                    processed.insert(processed.end(),processedDomain.begin(),processedDomain.end());
+                }
+                for(int wtc=0;wtc<titleWeight;wtc++){
+
+                    processed.insert(processed.end(),processedTitle.begin(),processedTitle.end());
+                }
+
+                for(int wtc=0;wtc<descriptionWeight;wtc++){
+
+                    processed.insert(processed.end(),processedDescription.begin(),processedDescription.end());
+                }
+
+                for(int wtc=0;wtc<summaryWeight;wtc++){
+
+                    processed.insert(processed.end(),processedSummary.begin(),processedSummary.end());
+                }
+
+                for(int wtc=0;wtc<narrativeWeight;wtc++){
+
+                    processed.insert(processed.end(),processedNarrative.begin(),processedNarrative.end());
+                }
+
+                for(int wtc=0;wtc<conceptsWeight;wtc++){
+                    processed.insert(processed.end(),processedConcepts.begin(),processedConcepts.end());
+
+                }
+
+                
 
                 map<string,int> queryFreq = getIndexedText(processed);
                 vector<pair<string,double>> answer = giveRankForTopic(
@@ -180,7 +203,7 @@ vector<string> Query::split(string text){
         transform(token.begin(), token.end(), token.begin(),
                   [](unsigned char c){ return tolower(c); });
         token = trimPunctAndInteger(token);
-        if(!isStopWord(token) && !isInteger(token)  && token.length()>0){
+        if(!isStopWord(token)  && token.length()>0){
             ans.push_back(token);
         }
         if(pos==string::npos){
