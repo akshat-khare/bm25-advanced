@@ -62,6 +62,7 @@ Query::searchFile(string fileName, string indextoDocumentFile, string invertedIn
                             getline(file,line);
                         }
                         processedDescription = parseNonTaggedTextFromString(accLine);
+                        break;
                     }
                 }
                 //summary
@@ -75,6 +76,7 @@ Query::searchFile(string fileName, string indextoDocumentFile, string invertedIn
                             getline(file,line);
                         }
                         processedSummary = parseNonTaggedTextFromString(accLine);
+                        break;
                     }
                 }
                 //narrative
@@ -88,6 +90,7 @@ Query::searchFile(string fileName, string indextoDocumentFile, string invertedIn
                             getline(file,line);
                         }
                         processedNarrative = parseNonTaggedTextFromString(accLine);
+                        break;
                     }
                 }
                 //concepts
@@ -101,6 +104,7 @@ Query::searchFile(string fileName, string indextoDocumentFile, string invertedIn
                             getline(file,line);
                         }
                         processedConcepts = parseNonTaggedTextFromString(accLine);
+                        break;
                     }
                 }
                 vector<string> processed;
@@ -250,6 +254,7 @@ vector<pair<string, double>> Query::giveRankForTopic(vector<pair<int, double>> v
     for(auto it = vec.begin(); it!= vec.end();it++){
         ans.push_back(make_pair(indexToDocumentInfo[it->first], it->second));
     }
+    return ans;
 }
 
 void Query::readIndexToDocumentInfo(string fileName) {
@@ -324,6 +329,7 @@ void Query::writeOutput(vector<pair<string, double>> vec, int number) {
         int count =1;
         for(auto it = vec.begin(); it!= vec.end(); it++){
             file<< number << " 0 " << it->first << " " <<  count << " "<< it->second << " p\n";
+            count ++;
         }
         file.close();
     }else{
