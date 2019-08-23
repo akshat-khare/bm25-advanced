@@ -12,6 +12,10 @@ public:
         dfi = 1;
         documentIndexFrequency[documentIndex] = frequency;
     }
+    TermParameters(double weightarg, int dfiarg){
+        weight = weightarg;
+        dfi = dfiarg;
+    }
     double weight;
     int dfi;
     map<int,int> documentIndexFrequency;

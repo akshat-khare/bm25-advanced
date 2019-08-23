@@ -11,14 +11,28 @@ Query::searchFile(string fileName, string indextoDocumentFile, string invertedIn
     string line;
     if(file.is_open()){
         //read encoded data first
+        readAvgAndNumDocuments(avgNumDocumentsLength);
+        readIndexToDocumentInfo(indextoDocumentFile);
+        readDocumentLengths(documentLengthsFile);
+        readInvertedIndex(invertedIndexFile);
         while(getline(file,line)){
             if(line.substr(0,topTag.length()).compare(topTag)==0){
+                int topicNumber;
                 vector<string> processedDomain;
                 vector<string> processedTitle;
                 vector<string> processedDescription;
                 vector<string> processedSummary;
                 vector<string> processedNarrative;
                 vector<string> processedConcepts;
+                //num
+                while(getline(file,line)){
+                    if(line.substr(0,numTag.length()).compare(numTag)==0){
+                        line = line.substr(numTag.length());
+                        line.replace(line.find(numTagTrashText),numTagTrashText.length(),"");
+                        topicNumber = stoi(line);
+                        break;
+                    }
+                }
                 //domain
                 while(getline(file,line)){
                     if(line.substr(0,domTag.length()).compare(domTag)==0){
@@ -107,6 +121,7 @@ Query::searchFile(string fileName, string indextoDocumentFile, string invertedIn
                                         )
                                 )
                         );
+                writeOutput(answer, topicNumber);
 
 
             }
@@ -116,43 +131,202 @@ Query::searchFile(string fileName, string indextoDocumentFile, string invertedIn
         cerr << "Unable to open file"<<endl;
     }
 }
+string Query::trimPunctAndInteger(string str) {
+    for (int i = 0, len = str.size(); i < len; i++)
+    {
+        if (ispunct(str[i]) || isdigit(str[i]))
+        {
+            str.erase(i--, 1);
+            len = str.size();
+        }
+    }
+    return str;
+}
+bool Query::isInteger(string basicString) {
+    string::const_iterator it = basicString.begin();
+    while(it!=basicString.end() && isdigit(*it)){
+        it++;
+    }
+    return !basicString.empty() && it == basicString.end();
+}
+bool Query::isStopWord(string basicString) {
+    for(int i=0; i< numStopWords;i++){
+        if(basicString.compare(stopWord[i]) == 0){
+            return true;
+        }
+    }
+    return false;
+};
 
+vector<string> Query::split(string text){
+    size_t pos =0;
+    string token;
+    vector<string> ans;
+    while((pos=text.find(" ")) != string::npos || text.size()>0){
+        token = text.substr(0,pos);
+        transform(token.begin(), token.end(), token.begin(),
+                  [](unsigned char c){ return tolower(c); });
+        token = trimPunctAndInteger(token);
+        if(!isStopWord(token) && !isInteger(token)  && token.length()>0){
+            ans.push_back(token);
+        }
+        if(pos==string::npos){
+            break;
+        }
+        text.erase(0, pos + 1);
+    }
+    return ans;
+}
 vector<string> Query::parseNonTaggedTextFromString(string text) {
-    return vector<string>();
+    string temptext(text);
+    vector<string> splittedVec = split(temptext);
+    return splittedVec;
 }
 
 map<string, int> Query::getIndexedText(vector<string> vec) {
-    return map<string, int>();
+    map<string, int> freqMap;
+    for(int i=0;i<vec.size();i++){
+        string temp = vec[i];
+        if(freqMap.find(temp)== freqMap.end()){
+            freqMap[temp] = 1;
+        }else{
+            freqMap[temp] = freqMap[temp] + 1;
+        }
+    }
+    return freqMap;
 }
 
-vector<pair<double, int>> Query::getScoreForTopic(map<string, int> vec) {
-    return vector<pair<double, int>>();
+map<int,double> Query::getScoreForTopic(map<string, int> mymap) {
+    map<int, double> documentToScore;
+    for(auto queryTermIterator = mymap.begin(); queryTermIterator != mymap.end(); queryTermIterator++){
+        string term = queryTermIterator->first;
+        auto parameters = invertedIndex.find(term);
+        if(parameters!=invertedIndex.end()){
+            int qfi = queryTermIterator->second;
+            TermParameters termParameters= parameters->second;
+            double weight = termParameters.weight;
+            for(auto docIterator = termParameters.documentIndexFrequency.begin()
+                    ;docIterator != termParameters.documentIndexFrequency.end();
+                    docIterator++){
+                int docNo = docIterator->first;
+                int tfi = docIterator->second;
+                int scoreTermDoc = getScoreForTermForDocument(qfi,docNo,weight,tfi);
+                if(documentToScore.find(docNo)!=documentToScore.end()){
+                    documentToScore[docNo] = documentToScore[docNo] + scoreTermDoc;
+                }else{
+                    documentToScore[docNo] = scoreTermDoc;
+                }
+            }
+        }else{
+
+        }
+    }
+    return documentToScore;
 }
 
-double Query::getScoreForTermForDocument(string term, int qfi, int docNo) {
-    return 0;
+double Query::getScoreForTermForDocument(int qfi, int docNo, int weight, int tfi) {
+    double documentLength = documentLengthVec[docNo] * 1.0;
+    return ((qfi)* (tfi*(1+k1)) * (weight))/(k1 * ((1-b) + b * (documentLength/avgDocumentLength) )+tfi);
 }
 
-vector<pair<double, int>> Query::sort_index(vector<pair<double, int>> vec) {
-    return vector<pair<double, int>>();
+vector<pair<int, double>> Query::sort_index(map<int,double> documentToScore) {
+    int numValuesAdded=0;
+    vector<pair<int,double>> ans;
+    while(numValuesAdded<maxRanking && documentToScore.size()!=0){
+        auto x = max_element(documentToScore.begin(),documentToScore.end(),
+                             [](const pair<int,double>& p1, const pair<int,double>& p2){
+                                 return p1.second < p2.second;
+                             });
+        ans.push_back(make_pair(x->first,x->second));
+        numValuesAdded++;
+        documentToScore.erase(x);
+    }
+    return ans;
+
 }
 
-vector<pair<string, double>> Query::giveRankForTopic(vector<pair<double, int>> vec) {
-    return vector<pair<string, double>>();
+vector<pair<string, double>> Query::giveRankForTopic(vector<pair<int, double>> vec) {
+    vector<pair<string, double>> ans;
+    for(auto it = vec.begin(); it!= vec.end();it++){
+        ans.push_back(make_pair(indexToDocumentInfo[it->first], it->second));
+    }
 }
 
 void Query::readIndexToDocumentInfo(string fileName) {
-
+    ifstream file (fileName);
+    string line;
+    if(file.is_open()){
+        while(getline(file,line)){
+            indexToDocumentInfo.push_back(line);
+        }
+        file.close();
+    }else{
+        cerr << "Unable to open file";
+    }
 }
 
 void Query::readInvertedIndex(string fileName) {
-
+    ifstream file (fileName);
+    string line;
+    if(file.is_open()){
+        while(getline(file,line)){
+            string term = line;
+            getline(file,line);
+            double weight = stod(line);
+            getline(file,line);
+            int dfi = stoi(line);
+            TermParameters * termParameters = new TermParameters(weight,dfi);
+            for(int i = 0 ; i<dfi;i++){
+                getline(file,line);
+                int docIndex = stoi(line);
+                getline(file,line);
+                int tfi = stoi(line);
+                termParameters->documentIndexFrequency[docIndex] = tfi;
+            }
+            invertedIndex.insert({term,*termParameters});
+        }
+        file.close();
+    }else{
+        cerr << "Unable to open file";
+    }
 }
 
 void Query::readAvgAndNumDocuments(string fileName) {
-
+    ifstream file (fileName);
+    string line;
+    if(file.is_open()){
+        getline(file,line);
+        avgDocumentLength = stod(line);
+        getline(file,line);
+        numDocuments = stoi(line);
+        file.close();
+    }else{
+        cerr << "Unable to open file";
+    }
 }
 
 void Query::readDocumentLengths(string fileName) {
+    ifstream file (fileName);
+    string line;
+    if(file.is_open()){
+        while(getline(file,line)){
+            documentLengthVec.push_back(stoi(line));
+        }
+        file.close();
+    }else{
+        cerr << "Unable to open file";
+    }
+}
 
+void Query::writeOutput(vector<pair<string, double>> vec, int number) {
+    ofstream file (outputFileName);
+    if(file.is_open()){
+        int count =1;
+        for(auto it = vec.begin(); it!= vec.end(); it++){
+            file<< number << " 0 " << it->first << " " <<  count << " "<< it->second << " p\n";
+        }
+        file.close();
+    }else{
+        cerr << "Unable to open file"<<endl;
+    }
 }
