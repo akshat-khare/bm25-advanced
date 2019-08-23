@@ -34,6 +34,7 @@ public:
     int numDocuments; //read 1
     void searchFile(string fileName, string indextoDocumentFile, string invertedIndexFile, string avgNumDocumentsLength, string documentLengthsFile);
     string outputFileName = "trecOut.txt";
+    ofstream outputFile;
 
     vector<string> parseNonTaggedTextFromString(string text);
     map<string, int> getIndexedText(vector<string> vec);

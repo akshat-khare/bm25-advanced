@@ -9,12 +9,14 @@ Query::searchFile(string fileName, string indextoDocumentFile, string invertedIn
                   string documentLengthsFile) {
     ifstream file (fileName);
     string line;
-    if(file.is_open()){
+    outputFile.open(outputFileName);
+    if(file.is_open() && outputFile.is_open()){
         //read encoded data first
         readAvgAndNumDocuments(avgNumDocumentsLength);
         readIndexToDocumentInfo(indextoDocumentFile);
         readDocumentLengths(documentLengthsFile);
         readInvertedIndex(invertedIndexFile);
+
         while(getline(file,line)){
             if(line.substr(0,topTag.length()).compare(topTag)==0){
                 int topicNumber;
@@ -131,6 +133,7 @@ Query::searchFile(string fileName, string indextoDocumentFile, string invertedIn
             }
         }
         file.close();
+        outputFile.close();
     }else{
         cerr << "Unable to open file"<<endl;
     }
@@ -324,15 +327,14 @@ void Query::readDocumentLengths(string fileName) {
 }
 
 void Query::writeOutput(vector<pair<string, double>> vec, int number) {
-    ofstream file (outputFileName);
-    if(file.is_open()){
+//    if(outputFile.is_open()){
         int count =1;
         for(auto it = vec.begin(); it!= vec.end(); it++){
-            file<< number << " 0 " << it->first << " " <<  count << " "<< it->second << " p\n";
+            outputFile<< number << " 0 " << it->first << " " <<  count << " "<< it->second << " p\n";
             count ++;
         }
-        file.close();
-    }else{
-        cerr << "Unable to open file"<<endl;
-    }
+//        outputFile.close();
+//    }else{
+//        cerr << "Unable to open file"<<endl;
+//    }
 }
