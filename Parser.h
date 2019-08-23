@@ -34,7 +34,7 @@ public:
     string textTag = "<TEXT>";
     string textTagEnd = "</TEXT>";
 public:
-    string datasetFolder;
+    string indexFileStructure;
     double avgDocumentLength; //write 1
     map<string, int> documentToIndexTable;
     vector<string> indexToDocumentInfo; //write
@@ -44,7 +44,7 @@ public:
     int numDocuments = 0; //write 1
     bool isStopWord(string basicString);
     void parseFile(string file);
-    void parseFolder(string folder);
+    void parseFolder(string folder, string outputFileStructure);
     vector<string> parseNonTaggedTextFromString(string text);
     string removeTags(string text); // TODO: CHANGE
     map<string, int> getIndexedText(vector<string>);

@@ -32,8 +32,8 @@ public:
     vector<int> documentLengthVec; //read
     map<string, TermParameters> invertedIndex; //read
     int numDocuments; //read 1
-    void searchFile(string fileName, string indextoDocumentFile, string invertedIndexFile, string avgNumDocumentsLength, string documentLengthsFile);
-    string outputFileName = "trecOut.txt";
+    void searchFile(string fileName, string indextoDocumentFile, string invertedIndexFile, string avgNumDocumentsLengthFile, string documentLengthsFile, string outputfile, string indexFileStructure);
+    string outputFileName;
     ofstream outputFile;
 
     vector<string> parseNonTaggedTextFromString(string text);

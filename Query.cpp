@@ -5,21 +5,22 @@
 #include "Query.h"
 
 void
-Query::searchFile(string fileName, string indextoDocumentFile, string invertedIndexFile, string avgNumDocumentsLength,
-                  string documentLengthsFile) {
+Query::searchFile(string fileName, string indextoDocumentFile, string invertedIndexFile, string avgNumDocumentsLengthFile,
+                  string documentLengthsFile, string outputfile, string indexFileStructure) {
     ifstream file (fileName);
     string line;
+    outputFileName = outputfile;
     outputFile.open(outputFileName);
     if(file.is_open() && outputFile.is_open()){
         //read encoded data first
         cout << "reading avg"<<endl;
-        readAvgAndNumDocuments(avgNumDocumentsLength);
+        readAvgAndNumDocuments(indexFileStructure + avgNumDocumentsLengthFile);
         cout << "reading index"<<endl;
-        readIndexToDocumentInfo(indextoDocumentFile);
+        readIndexToDocumentInfo(indexFileStructure+indextoDocumentFile);
         cout << "reading length"<<endl;
-        readDocumentLengths(documentLengthsFile);
+        readDocumentLengths(indexFileStructure+documentLengthsFile);
         cout << "reading index"<<endl;
-        readInvertedIndex(invertedIndexFile);
+        readInvertedIndex(indexFileStructure+invertedIndexFile);
 
         while(getline(file,line)){
             if(line.substr(0,topTag.length()).compare(topTag)==0){

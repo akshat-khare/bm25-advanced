@@ -20,7 +20,9 @@ std::string GetCurrentWorkingDir( void ) {
     std::string current_working_dir(buff);
     return current_working_dir;
 }
-void Parser::parseFolder(string folder){
+void Parser::parseFolder(string folder, string outputIndexFileStructure){
+    cout<<"Parse"<<endl;
+    indexFileStructure = outputIndexFileStructure;
     cout << GetCurrentWorkingDir()<<endl;
     DIR* dirp = opendir(folder.c_str());
     struct dirent * dp;
@@ -40,10 +42,10 @@ void Parser::parseFolder(string folder){
     closedir(dirp);
     avgDocumentLength =(double) (documentLengthSum / numDocuments);
     calculateWeights();
-    writeIndexToDocumentInfo("indexToDocument.txt");
-    writeAvgAndNumDocuments("avgAndNumDocuments.txt");
-    writeDocumentLengths("documentLengths.txt");
-    writeInvertedIndex("invertedIndex.txt");
+    writeIndexToDocumentInfo(indexFileStructure+"_indexToDocument.txt");
+    writeAvgAndNumDocuments(indexFileStructure+"_avgAndNumDocuments.txt");
+    writeDocumentLengths(indexFileStructure+"_documentLengths.txt");
+    writeInvertedIndex(indexFileStructure+"_invertedIndex.txt");
 };
 
 void Parser::parseFile(string fileName){
