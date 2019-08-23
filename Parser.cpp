@@ -31,6 +31,7 @@ void Parser::parseFolder(string folder){
             continue;
         }
         files.push_back(fileName);
+        cout << "Parsing "<< fileName << " "<< numDocuments << " yet which is number "<< (files.size()+1)<< endl;
         parseFile(folder +"/"+ fileName); //do remember to close
     }
 //    for(int i =0;i< files.size();i++){
@@ -69,10 +70,11 @@ void Parser::parseFile(string fileName){
                         //parseHead
                         line = line.substr(6);
                         size_t endHeadPos = line.find(headTagEnd);
-                        if(endHeadPos==string::npos){
+                        while(endHeadPos==string::npos){
                             string nextLine;
                             getline(file, nextLine);
                             line = line + " " + nextLine;
+                            endHeadPos = line.find(headTagEnd);
                         }
                         line.replace(line.find(headTagEnd), line.length(),"");
                         docLength += line.length();
