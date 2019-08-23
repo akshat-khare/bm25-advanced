@@ -5,8 +5,17 @@
 #ifndef BM25_QUERY_H
 #define BM25_QUERY_H
 
+#include <stdio.h>
 #include <string>
+#include <map>
+#include <set>
+#include <tuple>
+#include <fstream>
+#include <iostream>
 #include <vector>
+#include <dirent.h>
+#include <algorithm>
+#include <math.h>
 #include "TermParameters.h"
 
 using namespace std;
@@ -18,7 +27,7 @@ public:
     vector<int> documentLengthVec; //read
     map<string, TermParameters> invertedIndex; //read
     int numDocuments; //read 1
-    void searchFile(string file, string indextoDocumentFile, string invertedIndexFile, string avgNumDocumentsLength, string documentLengthsFile);
+    void searchFile(string fileName, string indextoDocumentFile, string invertedIndexFile, string avgNumDocumentsLength, string documentLengthsFile);
 
     vector<string> parseNonTaggedTextFromString(string text);
     map<string, int> getIndexedText(vector<string> vec);
@@ -33,6 +42,16 @@ public:
     void readAvgAndNumDocuments(string fileName);
     void readDocumentLengths(string fileName);
 
+    string topTag = "<top>";
+    string domTag = "<dom>";
+    string domainTrashText = " Domain:  ";
+    string titleTag = "<title>";
+    string domainTopicText = " Topic:  ";
+    string descTag = "<desc>";
+    string narrativeTag = "<narr>";
+    string summaryTag = "<smry>";
+    string conceptsTag = "<con>";
+    string factorsTag = "<fac>";
 };
 
 
