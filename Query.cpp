@@ -12,9 +12,13 @@ Query::searchFile(string fileName, string indextoDocumentFile, string invertedIn
     outputFile.open(outputFileName);
     if(file.is_open() && outputFile.is_open()){
         //read encoded data first
+        cout << "reading avg"<<endl;
         readAvgAndNumDocuments(avgNumDocumentsLength);
+        cout << "reading index"<<endl;
         readIndexToDocumentInfo(indextoDocumentFile);
+        cout << "reading length"<<endl;
         readDocumentLengths(documentLengthsFile);
+        cout << "reading index"<<endl;
         readInvertedIndex(invertedIndexFile);
 
         while(getline(file,line)){
@@ -35,6 +39,7 @@ Query::searchFile(string fileName, string indextoDocumentFile, string invertedIn
                         break;
                     }
                 }
+                cout << "Finding answer for topic number "<<topicNumber<<endl;
                 //domain
                 while(getline(file,line)){
                     if(line.substr(0,domTag.length()).compare(domTag)==0){

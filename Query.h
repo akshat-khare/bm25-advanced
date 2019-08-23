@@ -54,11 +54,11 @@ public:
 
     string topTag = "<top>";
     string numTag = "<num>";
-    string numTagTrashText = " Number:  ";
+    string numTagTrashText = " Number: ";
     string domTag = "<dom>";
-    string domainTrashText = " Domain:  ";
+    string domainTrashText = " Domain: ";
     string titleTag = "<title>";
-    string domainTopicText = " Topic:  ";
+    string domainTopicText = " Topic: ";
     string descTag = "<desc>";
     string narrativeTag = "<narr>";
     string summaryTag = "<smry>";
